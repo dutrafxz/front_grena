@@ -75,7 +75,7 @@ function PLogin() {
       await api.criar("usuarios", {
         nome: nome.trim(),
         email: emailCadastro.trim(),
-        cpf: cpf.trim(),
+        cpf: cpf.replace(/\D/g, ""),
         senha: senhaCadastro
       });
       const usuario = await AuthRequests.login(emailCadastro.trim(), senhaCadastro);
@@ -96,8 +96,24 @@ function PLogin() {
         </div>
 
         <div className="login-tabs">
-          <button className={modo === "login" ? "active" : ""} onClick={() => { setModo("login"); setErro(""); }}>Entrar</button>
-          <button className={modo === "cadastro" ? "active" : ""} onClick={() => { setModo("cadastro"); setErro(""); }}>Criar conta</button>
+          <button
+            type="button"
+            aria-pressed={modo === "login"}
+            disabled={carregando}
+            className={modo === "login" ? "active" : ""}
+            onClick={() => { setModo("login"); setErro(""); }}
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            aria-pressed={modo === "cadastro"}
+            disabled={carregando}
+            className={modo === "cadastro" ? "active" : ""}
+            onClick={() => { setModo("cadastro"); setErro(""); }}
+          >
+            Criar conta
+          </button>
         </div>
 
         {modo === "login" ? (
@@ -107,13 +123,13 @@ function PLogin() {
             <form onSubmit={entrar}>
               <label className="field">
                 <span>E-mail</span>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="voce@email.com" required />
+                <input type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="voce@email.com" required />
               </label>
               <label className="field">
                 <span>Senha</span>
-                <input type="password" value={senha} onChange={e => setSenha(e.target.value)} placeholder="Sua senha" required />
+                <input type="password" autoComplete="current-password" value={senha} onChange={e => setSenha(e.target.value)} placeholder="Sua senha" required />
               </label>
-              {erro && <p className="login-erro">{erro}</p>}
+              {erro && <p className="login-erro" role="alert">{erro}</p>}
               <button className="primary login-submit" type="submit" disabled={carregando}>
                 {carregando ? "Entrando..." : "Entrar"}
               </button>
@@ -126,15 +142,17 @@ function PLogin() {
             <form onSubmit={cadastrar}>
               <label className="field">
                 <span>Nome completo</span>
-                <input value={nome} onChange={e => setNome(e.target.value)} placeholder="Seu nome completo" required />
+                <input autoComplete="name" value={nome} onChange={e => setNome(e.target.value)} placeholder="Seu nome completo" required />
               </label>
               <label className="field">
                 <span>E-mail</span>
-                <input type="email" value={emailCadastro} onChange={e => setEmailCadastro(e.target.value)} placeholder="voce@email.com" required />
+                <input type="email" autoComplete="email" value={emailCadastro} onChange={e => setEmailCadastro(e.target.value)} placeholder="voce@email.com" required />
               </label>
               <label className="field">
                 <span>CPF</span>
                 <input
+                  inputMode="numeric"
+                  autoComplete="off"
                   value={cpf}
                   onChange={e => setCpf(formatarCPF(e.target.value))}
                   placeholder="000.000.000-00"
@@ -144,9 +162,9 @@ function PLogin() {
               </label>
               <label className="field">
                 <span>Senha</span>
-                <input type="password" value={senhaCadastro} onChange={e => setSenhaCadastro(e.target.value)} placeholder="Mínimo 6 caracteres" required />
+                <input type="password" autoComplete="new-password" minLength={6} value={senhaCadastro} onChange={e => setSenhaCadastro(e.target.value)} placeholder="Mínimo 6 caracteres" required />
               </label>
-              {erro && <p className="login-erro">{erro}</p>}
+              {erro && <p className="login-erro" role="alert">{erro}</p>}
               <button className="primary login-submit" type="submit" disabled={carregando}>
                 {carregando ? "Cadastrando..." : "Criar conta e entrar"}
               </button>

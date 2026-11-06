@@ -17,13 +17,6 @@ function normalizeEntity<T>(entity: ApiEntity, value: T): T {
   return item;
 }
 
-function serializeBody(entity: ApiEntity, body: unknown) {
-  if (entity !== "pedidos" || !body || typeof body !== "object") return body;
-  const pedido = body as { valorTotal?: number; total?: number } & Record<string, unknown>;
-  const { valorTotal, ...rest } = pedido;
-  return { ...rest, total: valorTotal ?? pedido.total };
-}
-
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
   const response = await fetch(`${API_URL}${path}`, {
@@ -75,13 +68,13 @@ export const api = {
   criar: <T>(entity: ApiEntity, body: T) =>
     request<{ mensagem: string }>(`/api/${entity}`, {
       method: "POST",
-      body: JSON.stringify(serializeBody(entity, body))
+      body: JSON.stringify(body)
     }),
 
   atualizar: <T>(entity: ApiEntity, id: number, body: T) =>
     request<{ mensagem: string }>(`/api/${entity}/${id}`, {
       method: "PUT",
-      body: JSON.stringify(serializeBody(entity, body))
+      body: JSON.stringify(body)
     }),
 
   remover: (entity: ApiEntity, id: number) =>
